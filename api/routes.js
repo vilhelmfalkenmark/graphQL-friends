@@ -8,7 +8,7 @@ router.get('/', function(req, res) {
 // /people/:id
 router.get('/:id', function(req, res) {
   console.log(dataBase);
-  res.json({ people: dataBase.filter(person => person.id === req.params.id) });
+  res.json({ person: dataBase.filter(person => person.id === req.params.id)[0] });
 });
 
 module.exports = router;

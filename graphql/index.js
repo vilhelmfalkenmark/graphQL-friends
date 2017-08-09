@@ -18,6 +18,14 @@ const posts = [
   { id: 4, authorId: 3, title: 'Launchpad is Cool', votes: 7 },
 ];
 
+const citys = [
+  { id: 54, weather: 'cold', name: 'Stockholm', resident: 1 },
+  { id: 45, weather: 'medium', name: 'Berlin', resident: 2 },
+  { id: 23, weather: 'warm', name: 'Madrid', resident: 3 },
+  { id: 23, weather: 'medium', name: 'London', resident: 4 },
+];
+
+
 // When using graphql-tools, you describe the schema
 // as a GraphQL type language string:
 
@@ -26,7 +34,8 @@ const typeDefs = `
     id: Int!
     firstName: String
     lastName: String
-    posts: [Post] # the list of Posts by this author
+    posts: [Post] # the list of Posts by this author,
+    randomFact: String
   }
 
   type Post {
@@ -40,6 +49,7 @@ const typeDefs = `
   type Query {
     posts: [Post]
     author(id: Int!): Author
+    hello: String
   }
 
   # this schema allows the following mutation:
@@ -49,14 +59,16 @@ const typeDefs = `
     ): Post
   }
 `;
-
-// Then you define resolvers as a nested object that maps type and
-// field names to resolver functions:
+/*
+Then you define resolvers as a nested object that maps type and
+field names to resolver functions
+*/
 
 const resolvers = {
   Query: {
     posts: () => posts,
     author: (_, { id }) => find(authors, { id: id }),
+    hello: () => 'hejsan!'
   },
   Mutation: {
     upvotePost: (_, { postId }) => {
@@ -70,6 +82,7 @@ const resolvers = {
   },
   Author: {
     posts: (author) => filter(posts, { authorId: author.id }),
+    randomFact: () => 'Det här är en författare'
   },
   Post: {
     author: (post) => find(authors, { id: post.authorId }),

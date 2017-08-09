@@ -7,8 +7,13 @@ router.get('/', function(req, res) {
 
 // /people/:id
 router.get('/:id', function(req, res) {
-  console.log(dataBase);
-  res.json({ person: dataBase.filter(person => person.id === req.params.id)[0] });
+  const requestedID = parseInt(req.params.id);
+  const requestedPerson = dataBase.filter(person => person.id === requestedID)[0];
+  if(requestedPerson) {
+    res.json({ person: requestedPerson });
+  } else {
+    res.json({error: 'person not found'})
+  }
 });
 
 module.exports = router;

@@ -1,0 +1,26 @@
+type Query {
+  posts: [Post]
+  author(id: Int!): Author
+  hello: String
+}
+
+type Mutation {
+  upvotePost (
+    postId: Int!
+  ): Post
+}
+
+type Author {
+  id: Int!
+  firstName: String
+  lastName: String
+  posts: [Post] # the list of Posts by this author,
+  randomFact: String
+}
+
+type Post {
+  id: Int!
+  title: String
+  author: Author
+  votes: Int
+}

@@ -1,0 +1,31 @@
+query PostsForAuthor {
+author(id: 1) {
+  firstName
+  posts {
+    title
+    votes
+  }
+}
+}
+
+query PostsForAuthor2 {
+  posts {
+    id,
+    title,
+    votes
+  }
+}
+
+mutation PostsForAuthor3 {
+  upvotePost(postId:2) {
+    id,
+    votes
+  }
+}
+
+
+// const people = [
+//   {firstName: 'ville', lastName: 'Falkenmark', id: 2},
+//   {firstName: 'pelle', lastName: 'fwefwe', id: 3},
+//   {firstName: 'lasse', lastName: '32ef2323f', id: 1},
+// ];

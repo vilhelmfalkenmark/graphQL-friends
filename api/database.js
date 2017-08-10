@@ -8,7 +8,7 @@ module.exports = () => {
       age: 31,
       id: 1,
       votes: 0,
-      friends: [3]
+      friends: []
     },
     {
       email: 'kalle@hej.se',
@@ -18,7 +18,7 @@ module.exports = () => {
       age: 27,
       id: 2,
       votes: 0,
-      friends: [4,1]
+      friends: []
     },
     {
       email: 'johanna@hej.se',
@@ -28,7 +28,7 @@ module.exports = () => {
       age: 29,
       id: 3,
       votes: 0,
-      friends: [1,4,2]
+      friends: []
     },
     {
       email: 'Lasse@hej.se',
@@ -38,7 +38,7 @@ module.exports = () => {
       age: 59,
       id: 4,
       votes: 0,
-      friends: [2,3]
+      friends: []
     }
   ]
 };

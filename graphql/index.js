@@ -6,7 +6,6 @@ import graphqlHTTP from 'express-graphql';
 import graphql from 'graphql';
 import fetch from 'node-fetch';
 const app = express();
-// import typeDefs from "./schema.graphql";
 
 const BASE_URL = 'http://localhost:8000/people';
 
@@ -65,6 +64,14 @@ const people = {
     return axios.put(`${BASE_URL}/${id}`)
     .then(response => response.data.person)
     .catch(error => error)
+  },
+  addFriend: (id, friendId) => {
+    return axios.post(`${BASE_URL}/${id}`, {
+      id,
+      friendId
+    })
+    .then(response => response.data.person)
+    .catch(error => error)
   }
 }
 /*
@@ -81,7 +88,9 @@ const typeDefs = `
   type People {
     id: Int!
     first_name: String,
-    last_name: String
+    last_name: String,
+    full_name: String,
+    friends: [Person]
   }
 
   type Person {
@@ -108,6 +117,7 @@ const typeDefs = `
 
   type Mutation {
     upvotePerson(id: Int!): Person
+    addFriend(id: Int!, friendId: Int!): Person
   }
 `;
 /*
@@ -122,11 +132,15 @@ const resolvers = {
   Mutation: {
     upvotePerson: (context, {id}) => {
       return people.upvotePerson(id);
-    }
+    },
+    addFriend: (context, {id, friendId}) => people.addFriend(id, friendId)
   },
   Person: {
     stuff: person => test.filter(thing => thing.personId === person.id),
     friends: person => people.findFriends(person.friends),
+    full_name: person => `${person.first_name} ${person.last_name}`
+  },
+  People: {
     full_name: person => `${person.first_name} ${person.last_name}`
   }
 }

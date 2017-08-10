@@ -16,5 +16,5 @@ app.use((req, res, next) => {
 });
 
 app.use('/people', require('./routes'));
-console.log("Kompis apiet mår bra!");
+console.log(`Kompis apiet mår bra och bor på http://localhost:${port}`);
 app.listen(port);

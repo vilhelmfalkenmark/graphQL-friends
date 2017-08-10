@@ -29,3 +29,39 @@ mutation PostsForAuthor3 {
 //   {firstName: 'pelle', lastName: 'fwefwe', id: 3},
 //   {firstName: 'lasse', lastName: '32ef2323f', id: 1},
 // ];
+
+
+{
+	person(id: 1) {
+    id,
+    firstName: first_name
+    fullName: full_name
+    stuff {
+      id,
+      fact
+    },
+    friends {
+      id,
+      first_name,
+      last_name,
+      friends {
+  			first_name,
+        last_name
+      }
+    }
+  }
+}
+
+
+mutation upvotePerson {
+  upvotePerson(id:3) {
+    id,
+    first_name,
+    votes,
+    friends {
+      id,
+      first_name,
+      votes
+    }
+  }
+}

@@ -7,6 +7,7 @@ module.exports = () => {
       last_name: "Falkenmark",
       age: 31,
       id: 1,
+      votes: 0,
       friends: [3]
     },
     {
@@ -16,7 +17,8 @@ module.exports = () => {
       last_name: "Olsson",
       age: 27,
       id: 2,
-      friends: [3,4,2]
+      votes: 0,
+      friends: [4,1]
     },
     {
       email: 'johanna@hej.se',
@@ -25,6 +27,7 @@ module.exports = () => {
       last_name: "Falkenmark",
       age: 29,
       id: 3,
+      votes: 0,
       friends: [1,4,2]
     },
     {
@@ -34,6 +37,7 @@ module.exports = () => {
       last_name: "Olsson",
       age: 59,
       id: 4,
+      votes: 0,
       friends: [2,3]
     }
   ]

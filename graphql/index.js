@@ -53,29 +53,18 @@ const people = {
     });
   },
   findFriends: (friendArray = []) => {
-    // console.log(friendArray);
     const promiseArray = friendArray.map(friendId => axios.get(`${BASE_URL}/${friendId}`));
-    console.log(promiseArray, 'promiseArray');
     return axios.all(promiseArray).then((results) => {
-      let temp = results.map(response => response.data);
-      console.log(temp,' temp');
-      console.log(response);
-      // console.log(response[0].data, ' response från promiseArray');
-      // console.log(response.data, ' response från promiseArray');
-      return response.data
+      const friendsResponseArray = results.map(response => response.data).map(person => person.person);
+      return friendsResponseArray;
     }).catch((error) => {
       return error
     })
-
-
-    return [
-      {
-        first_name: "Ville",
-        last_name: "Falkenmark",
-        age: 31,
-        id: 1,
-      }
-    ]
+  },
+  upvotePerson: (id) => {
+    return axios.put(`${BASE_URL}/${id}`)
+    .then(response => response.data.person)
+    .catch(error => error)
   }
 }
 /*
@@ -100,7 +89,9 @@ const typeDefs = `
     first_name: String,
     last_name: String,
     stuff: [Stuff] # The stuff belonging to this person,
-    friends: [Friend]
+    friends: [Person],
+    full_name: String,
+    votes: Int
   }
 
   type Stuff {
@@ -108,17 +99,15 @@ const typeDefs = `
     fact: String
   }
 
-  type Friend {
-    id: Int!
-    first_name: String,
-    last_name: String
-  }
-
   # the schema allows the following query:
   type Query {
     person(id: Int!): Person
     people: [People]
     hello: String
+  }
+
+  type Mutation {
+    upvotePerson(id: Int!): Person
   }
 `;
 /*
@@ -130,37 +119,19 @@ const resolvers = {
     person: (context, {id}) => people.findByID(id),
     people: () => people.findAll()
   },
-  Person: {
-    stuff: (person) => {
-      return test.filter(thing => thing.personId === person.id);
-    },
-    friends: (person) => {
-      return people.findFriends(person.friends)
+  Mutation: {
+    upvotePerson: (context, {id}) => {
+      return people.upvotePerson(id);
     }
+  },
+  Person: {
+    stuff: person => test.filter(thing => thing.personId === person.id),
+    friends: person => people.findFriends(person.friends),
+    full_name: person => `${person.first_name} ${person.last_name}`
   }
 }
-  // Mutation: {
-  //   upvotePost: (_, { postId }) => {
-  //     const post = find(posts, { id: postId });
-  //     if (!post) {
-  //       throw new Error(`Couldn't find post with id ${postId}`);
-  //     }
-  //     post.votes += 1;
-  //     return post;
-  //   },
-  // },
-  // Author: {
-  //   posts: (author) => filter(posts, { authorId: author.id }),
-  //   randomFact: () => 'Det här är en författare'
-  // },
-  // Post: {
-  //   author: (post) => find(authors, { id: post.authorId }),
-  // },
-// };
-
 // At the end, the schema and resolvers are
 // combined using makeExecutableSchema:
-
 export const schema = makeExecutableSchema({
   typeDefs: [typeDefs],
   resolvers,
@@ -173,7 +144,9 @@ app.use(graphqlHTTP(req => {
   };
 }));
 
+const port = 5000;
+
 app.listen(
   5000,
-  () => console.log('GraphQL Server running at http://localhost:5000')
+  () => console.log(`GraphQL bor på http://localhost:${port}`)
 );

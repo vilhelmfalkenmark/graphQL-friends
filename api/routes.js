@@ -1,19 +1,42 @@
 const router = require('express').Router();
 const dataBase = require('./database')();
-// /people
-router.get('/', function(req, res) {
+
+router.route('/').get((req,res) => {
   res.json({ people: dataBase });
 });
 
-// /people/:id
-router.get('/:id', function(req, res) {
-  const requestedID = parseInt(req.params.id);
-  const requestedPerson = dataBase.filter(person => person.id === requestedID)[0];
-  if(requestedPerson) {
-    res.json({ person: requestedPerson });
-  } else {
-    res.json({error: 'person not found'})
+const findIndexOfRequestedPerson = requestedID => {
+  let indexOfRequestedPerson = false;
+  let i;
+  for (i = 0; i < dataBase.length; i++) {
+    if(dataBase[i].id == requestedID) {
+      indexOfRequestedPerson = i;
+    }
   }
-});
+  return indexOfRequestedPerson;
+}
+
+router.route('/:id')
+  .get((req,res) => {
+    const indexOfRequestedPerson = findIndexOfRequestedPerson(parseInt(req.params.id));
+
+    if(typeof(indexOfRequestedPerson) !== 'boolean') {
+      res.json({ person: dataBase[indexOfRequestedPerson]});
+    } else {
+      res.json({error: 'person not found'})
+    }
+  })
+  .put((req, res) => {
+    const indexOfRequestedPerson = findIndexOfRequestedPerson(parseInt(req.params.id));
+    dataBase[indexOfRequestedPerson].votes++;
+
+    if(typeof(indexOfRequestedPerson) !== 'boolean') {
+      res.json({ person: dataBase[indexOfRequestedPerson]});
+    } else {
+      res.json({error: 'person not found'})
+    }
+  });
+
+
 
 module.exports = router;

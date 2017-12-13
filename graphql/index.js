@@ -4,76 +4,71 @@ import express from 'express';
 import axios from 'axios';
 import graphqlHTTP from 'express-graphql';
 import graphql from 'graphql';
-import fetch from 'node-fetch';
 const app = express();
 
 const BASE_URL = 'http://localhost:8000/people';
 
-const test = [
-  {
-    id: 1,
-    personId: 1,
-    fact: 'Tillhör person 1'
-  },
-  {
-    id: 2,
-    personId: 2,
-    fact: 'Tillhör person 2'
-  },
-  {
-    id: 3,
-    personId: 3,
-    fact: 'Tillhör person 3'
-  },
-  {
-    id: 4,
-    personId: 4,
-    fact: 'Tillhör person 4'
-  }
-]
-
 const people = {
   findByID: (id = 1) => {
-    return axios.get(`${BASE_URL}/${id}`)
-    .then((response) => {
-      return response.data.person;
+    return axios
+      .get(`${BASE_URL}/${id}`)
+      .then(response => {
+        return response.data.person;
       })
-    .catch((error) => {
-      return error
-    });
+      .catch(error => {
+        return error;
+      });
   },
   findAll: () => {
-    return axios.get(`${BASE_URL}`)
-    .then((response) => {
-      return response.data.people;
+    return axios
+      .get(`${BASE_URL}`)
+      .then(response => {
+        return response.data.people;
       })
-    .catch((error) => {
-      return error
-    });
+      .catch(error => {
+        return error;
+      });
   },
   findFriends: (friendArray = []) => {
-    const promiseArray = friendArray.map(friendId => axios.get(`${BASE_URL}/${friendId}`));
-    return axios.all(promiseArray).then((results) => {
-      const friendsResponseArray = results.map(response => response.data).map(person => person.person);
-      return friendsResponseArray;
-    }).catch((error) => {
-      return error
-    })
+    const promiseArray = friendArray.map(friendId =>
+      axios.get(`${BASE_URL}/${friendId}`)
+    );
+    return axios
+      .all(promiseArray)
+      .then(results => {
+        const friendsResponseArray = results
+          .map(response => response.data)
+          .map(person => person.person);
+        return friendsResponseArray;
+      })
+      .catch(error => {
+        return error;
+      });
   },
-  upvotePerson: (id) => {
-    return axios.put(`${BASE_URL}/${id}`)
-    .then(response => response.data.person)
-    .catch(error => error)
+  upvotePerson: id => {
+    return axios
+      .put(`${BASE_URL}/${id}`)
+      .then(response => response.data.person)
+      .catch(error => error);
   },
   addFriend: (id, friendId) => {
-    return axios.post(`${BASE_URL}/${id}`, {
+    return axios
+      .post(`${BASE_URL}/${id}`, {
+        id,
+        friendId
+      })
+      .then(response => response.data.person)
+      .catch(error => error);
+  },
+  addInterest: (id, interest) => {
+    return axios.patch(`${BASE_URL}/${id}`, {
       id,
-      friendId
-    })
-    .then(response => response.data.person)
-    .catch(error => error)
+      interest
+    }).then(response => response.data.person)
+      .catch(err => console.error(error))
+    ;
   }
-}
+};
 /*
 1. Connector: Den som skapar en connection mot single-source-of truth
 (exempelvis api, databas, fil etc.)
@@ -100,7 +95,8 @@ const typeDefs = `
     stuff: [Stuff] # The stuff belonging to this person,
     friends: [Person],
     full_name: String,
-    votes: Int
+    votes: Int,
+    interest: [String]
   }
 
   type Stuff {
@@ -108,16 +104,21 @@ const typeDefs = `
     fact: String
   }
 
+  input friendId {
+    id: Int!
+  }
+
   # the schema allows the following query:
   type Query {
-    person(id: Int!): Person
+    person(params: friendId): Person
     people: [People]
     hello: String
   }
 
   type Mutation {
-    upvotePerson(id: Int!): Person
+    upvotePerson(params: friendId): Person
     addFriend(id: Int!, friendId: Int!): Person
+    addInterest(id: Int!, interest: String!): Person
   }
 `;
 /*
@@ -126,14 +127,15 @@ field names to resolver functions
 */
 const resolvers = {
   Query: {
-    person: (context, {id}) => people.findByID(id),
+    person: (context, { id }) => people.findByID(id),
     people: () => people.findAll()
   },
   Mutation: {
-    upvotePerson: (context, {id}) => {
+    upvotePerson: (context, { id }) => {
       return people.upvotePerson(id);
     },
-    addFriend: (context, {id, friendId}) => people.addFriend(id, friendId)
+    addFriend: (context, { id, friendId }) => people.addFriend(id, friendId),
+    addInterest: (context, { id, interest}) => people.addInterest(id, interest)
   },
   Person: {
     stuff: person => test.filter(thing => thing.personId === person.id),
@@ -143,7 +145,7 @@ const resolvers = {
   People: {
     full_name: person => `${person.first_name} ${person.last_name}`
   }
-}
+};
 // At the end, the schema and resolvers are
 // combined using makeExecutableSchema:
 export const schema = makeExecutableSchema({

@@ -34,6 +34,27 @@ router.route('/:id')
     res.json({error: 'person not found'})
   }
 })
+.patch((req, res) => {
+  const indexOfRequestedPerson = findIndexOfRequestedPerson(parseInt(req.params.id));
+  console.log(dataBase[indexOfRequestedPerson]);
+  let i;
+  for (i = 0; i < dataBase.length; i += 1) {
+    if(dataBase[i].id === parseInt(req.params.id,10)) {
+      if(dataBase[i].interest) {
+        dataBase[i].interest.push(req.body.interest);
+      } else {
+        dataBase[i].interest = [req.body.interest];
+      }
+    }
+  }
+
+  if (typeof indexOfRequestedPerson !== "boolean") {
+    res.json({ person: dataBase[indexOfRequestedPerson] });
+  } else {
+    res.json({ error: "person not found" });
+  }
+
+})
 .put((req, res) => {
   const indexOfRequestedPerson = findIndexOfRequestedPerson(parseInt(req.params.id));
 

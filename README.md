@@ -1,6 +1,6 @@
 # GraphQL sandbox with mocked friends api
 
-Have node version 6.1 or higher installed.
+Have node version 8.1.x or higher installed.
 
 1. npm i
 2. Make sure to have nodemon installed globally. If not, do npm i -g nodemon

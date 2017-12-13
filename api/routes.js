@@ -1,5 +1,5 @@
-const router = require('express').Router();
 const dataBase = require('./database')();
+const router = require('express').Router();
 
 ////////////////////////////////////////////////
 // GET ALLPEOPLE

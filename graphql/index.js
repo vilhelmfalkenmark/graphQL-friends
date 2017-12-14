@@ -67,6 +67,12 @@ const people = {
     }).then(response => response.data.person)
       .catch(err => console.error(error))
     ;
+  },
+  deletePerson: (id) => {
+    return axios.delete(`${BASE_URL}/${id}`, {
+      params: {id}
+    }).then(response => response.data.people)
+      .catch(error => console.error(error))
   }
 };
 /*
@@ -80,14 +86,6 @@ queries och mutations mot modellen.
 // When using graphql-tools, you describe the schema
 // as a GraphQL type language string:
 const typeDefs = `
-  type People {
-    id: Int!
-    first_name: String,
-    last_name: String,
-    full_name: String,
-    friends: [Person]
-  }
-
   type Person {
     id: Int!
     first_name: String,
@@ -104,21 +102,22 @@ const typeDefs = `
     fact: String
   }
 
-  input friendId {
+  input personId {
     id: Int!
   }
 
   # the schema allows the following query:
   type Query {
-    person(params: friendId): Person
-    people: [People]
+    person(params: personId): Person
+    people: [Person]
     hello: String
   }
 
   type Mutation {
-    upvotePerson(params: friendId): Person
-    addFriend(id: Int!, friendId: Int!): Person
+    upvotePerson(params: personId): Person
+    addFriend(id: Int!, personId: Int!): Person
     addInterest(id: Int!, interest: String!): Person
+    deletePerson(params: personId): [Person]
   }
 `;
 /*
@@ -127,22 +126,20 @@ field names to resolver functions
 */
 const resolvers = {
   Query: {
-    person: (context, { id }) => people.findByID(id),
+    person: (context, {params: { id }}) => people.findByID(id),
     people: () => people.findAll()
   },
   Mutation: {
-    upvotePerson: (context, { id }) => {
+    upvotePerson: (context, {params: { id }}) => {
       return people.upvotePerson(id);
     },
     addFriend: (context, { id, friendId }) => people.addFriend(id, friendId),
-    addInterest: (context, { id, interest}) => people.addInterest(id, interest)
+    addInterest: (context, { id, interest}) => people.addInterest(id, interest),
+    deletePerson: (context, { params: { id } }) => console.log('id ->', id) || people.deletePerson(id)
   },
   Person: {
     stuff: person => test.filter(thing => thing.personId === person.id),
     friends: person => people.findFriends(person.friends),
-    full_name: person => `${person.first_name} ${person.last_name}`
-  },
-  People: {
     full_name: person => `${person.first_name} ${person.last_name}`
   }
 };

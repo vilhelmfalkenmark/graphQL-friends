@@ -1,4 +1,4 @@
-const dataBase = require('./database')();
+let dataBase = require('./database')();
 const router = require('express').Router();
 
 ////////////////////////////////////////////////
@@ -86,6 +86,15 @@ router.route('/:id')
   } else {
     res.json({error: 'person not found'})
   }
-});
+})
+.delete((req, res) => {
+  const { id } = req.params;
+
+  dataBase = dataBase.filter((person) => {
+    return person.id !== parseInt(id);
+  })
+
+  res.json({people: dataBase})
+})
 
 module.exports = router;
